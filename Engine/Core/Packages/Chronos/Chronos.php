@@ -17,13 +17,13 @@ class Chronos
     public function transform(){
         if($this->validate()){
             $this->dc_body = json_decode($this->body);
-            return $this->gear($this->dc_body)['middle'] . chr(13).chr(13).'<!--' . $this->errors . '-->';
+            return $this->gear($this->dc_body, 0)['middle'] . chr(13).chr(13).'<!--' . $this->errors . '-->';
         }else{
             return 'Argila Error: Please enter a valid json format';
         }
     }
 
-    private function gear($obj){
+    private function gear($obj, $beautify){
         $attr = '';
         $middle = '';
         if(gettype($obj) == 'object' || gettype($obj) == 'array'){
@@ -36,8 +36,9 @@ class Chronos
                         $attr = $attr . ' ' . substr($key, 1) . '="' . $item . '"';
                     }
                 }else{
-                    $res = $this->gear($item);
-                    $middle = $middle . '<' . $key . $res['attr'] . '>' . $res['middle'] . '</' . $key . '>';
+                    $res = $this->gear($item, ($beautify + 1));
+                    $middle = $middle . chr(13) .str_repeat(chr(9), $beautify) .'<' . $key . $res['attr'] . '>' . $res['middle'] .
+                        chr(13) .str_repeat(chr(9), $beautify) . '</' . $key . '>';
                 }
             }
         }else{
